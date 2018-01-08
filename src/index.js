@@ -1,6 +1,6 @@
-var Images;
-var TransparentImages;
-var ImageArray;
+var images;
+var transparentImages;
+var imageArray;
 
 function isTransparent(e) {
   var x = e.pageX - document.getElementById('image-tab-content').getBoundingClientRect().left + window.pageXOffset,
@@ -12,7 +12,7 @@ function isTransparent(e) {
   var context2D;
   var context;
 
-  ImageArray.forEach(function (image) {
+  imageArray.forEach(function (image) {
 
     if (!transparent) {
       return true;
@@ -58,12 +58,12 @@ function isTransparent(e) {
 (function () {
   var i;
 
-  Images = document.getElementsByClassName('nn-image');
-  TransparentImages = document.getElementsByClassName('nn-image-vacio');
-  ImageArray = Array.from(Images);
-  ImageArray.reverse();
-  for (i = 0; i < TransparentImages.length; i++) {
-    TransparentImages[i].addEventListener('mousemove', isTransparent);
+  images = document.getElementsByClassName('nn-image');
+  transparentImages = document.getElementsByClassName('nn-image-vacio');
+  imageArray = Array.from(images);
+  imageArray.reverse();
+  for (i = 0; i < transparentImages.length; i++) {
+    transparentImages[i].addEventListener('mousemove', isTransparent);
     // isTransparent(TransparentImages[i], ImageArray);
   }
 })();
