@@ -5,8 +5,8 @@ var imageArray;
 var canvases;
 
 function isTransparent(e) {
-  var x = e.pageX - document.getElementById('image-tab-content').getBoundingClientRect().left + window.pageXOffset,
-    y = e.pageY - document.getElementById('image-tab-content').getBoundingClientRect().top + window.pageYOffset,
+  var x = e.pageX - (document.getElementById('image-tab-content').getBoundingClientRect().left + window.pageXOffset),
+    y = e.pageY - (document.getElementById('image-tab-content').getBoundingClientRect().top + window.pageYOffset),
     transparent = true;
   var context, image, canvas;
 
