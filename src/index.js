@@ -1,12 +1,13 @@
 import {createCanvas} from './create_canvas';
 
+var canvases;
 var transparentImages;
 var imageArray;
-var canvases;
+var lastElementClicked;
 
-function isTransparent(e) {
-  var x = e.pageX - document.getElementById('image-tab-content').getBoundingClientRect().left + window.pageXOffset,
-    y = e.pageY - document.getElementById('image-tab-content').getBoundingClientRect().top + window.pageYOffset,
+function isTransparent(e, baseId, transparentMethod, notTransparentMethod) {
+  var x = e.pageX - (document.getElementById(baseId).getBoundingClientRect().left + window.pageXOffset),
+    y = e.pageY - (document.getElementById(baseId).getBoundingClientRect().top + window.pageYOffset),
     transparent = true;
   var context, image, canvas;
 
@@ -33,33 +34,64 @@ function isTransparent(e) {
     context = canvas.getContext('2d');
     transparent = context.getImageData(x, y, 1, 1).data[3] === 0;
 
-    if (transparent) {
-      image.style.opacity = 1; // For real browsers;
-      image.style.filter = 'alpha(opacity=100)'; // For IE;
-    } else {
-      image.style.opacity = 0.6;
-      image.style.filter = 'alpha(opacity=60)';
+    if (transparent && transparentMethod) {
+      transparentMethod(image, lastElementClicked);
+    } else if (!transparent && notTransparentMethod) {
+      notTransparentMethod(image, lastElementClicked);
     }
     return false;
   });
 }
 
-export function removeListener(element) {
-  element.removeEventListener('mousemove', isTransparent);
+function isClicked(e, object) {
+  if (e.target.className === object.transparentClass) {
+    if (lastElementClicked && object.lastElementMethod) {
+      object.lastElementMethod(lastElementClicked);
+    }
+  }
+  isTransparent(e, object.baseId, object.clickTransparentMethod, object.clickImageMethod);
 }
 
-export function startListener(element) {
-  element.addEventListener('mousemove', isTransparent);
+function isHover(e, object) {
+  isTransparent(e, object.baseId, object.transparentHoverMethod, object.hoverMethod);
+  if (object.triggerEvent === 'click' && object.hoverClickMethod) {
+    object.hoverClickMethod(e.target, lastElementClicked);
+  }
 }
 
-(function () {
+function startLayHover(object) {
   var i;
 
   canvases = [];
-  transparentImages = document.getElementsByClassName('nn-image-vacio');
-  imageArray = Array.from(document.getElementsByClassName('nn-image'));
+  transparentImages = document.getElementsByClassName(object.transparentClass);
+  imageArray = Array.from(document.getElementsByClassName(object.imageClass));
   canvases = createCanvas(imageArray);
   for (i = 0; i < transparentImages.length; i++) {
-    startListener(transparentImages[i]);
+    transparentImages[i].addEventListener('mousemove', function (e) {
+      isHover(e, object);
+    });
+  }
+}
+
+function initLayHover(object) {
+  if (object.triggerEvent === 'click') {
+    startLayHover(object);
+    document.addEventListener('click', function (e) {
+      isClicked(e, object);
+    });
+  } else if (object.triggerEvent === 'mousemove') {
+    startLayHover(object);
+  }
+}
+
+function updateClickedElement(value) {
+  lastElementClicked = value;
+}
+
+(function () {
+  var layhoverJS = { init: initLayHover, updateLastClick: updateClickedElement };
+
+  if (window.layhoverJS === undefined) {
+    window.layhoverJS = layhoverJS;
   }
 })();
