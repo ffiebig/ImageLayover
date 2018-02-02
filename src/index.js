@@ -89,13 +89,9 @@ function updateClickedElement(value) {
 }
 
 (function () {
-  var layhoverJS = initLayHover;
-  var updateLastClick = updateClickedElement;
+  var layhoverJS = { init: initLayHover, updateLastClick: updateClickedElement };
 
   if (window.layhoverJS === undefined) {
     window.layhoverJS = layhoverJS;
-  }
-  if (window.updateClickedElementJS === undefined) {
-    window.updateClickedElementJS = updateLastClick;
   }
 })();
